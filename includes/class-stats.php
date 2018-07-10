@@ -92,7 +92,35 @@ class Stats {
 	 */
 	public function all_stats( $request ) {
 
-		$data = array(
+		$data = array();
+
+		if ( is_multisite() ) {
+			$blogs = get_sites();
+
+			foreach ( $blogs as $blog ) {
+				$current_blog_id = $blog->blog_id;
+
+				switch_to_blog( $current_blog_id );
+				$data[ $current_blog_id ] = $this->build_response( $current_blog_id );
+
+				restore_current_blog();
+			}
+		} else {
+			$current_blog_id          = get_current_blog_id();
+			$data[ $current_blog_id ] = $this->build_response( get_current_blog_id() );
+		}
+
+		return new \WP_REST_Response( $data, 200 );
+	}
+
+	/**
+	 * Build the response object.
+	 *
+	 * @param int|string $blog_id The current blog id.
+	 */
+	private function build_response( $blog_id ) {
+		return array(
+			'site_name'        => get_bloginfo( 'name' ),
 			'total_posts'      => $this->total_posts(),
 			'total_pages'      => $this->total_pages(),
 			'total_users'      => $this->total_users(),
@@ -101,8 +129,6 @@ class Stats {
 			'total_comments'   => $this->total_comments(),
 			'total_images'     => $this->total_images(),
 		);
-
-		return new \WP_REST_Response( $data, 200 );
 	}
 
 	/**

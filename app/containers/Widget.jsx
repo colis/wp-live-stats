@@ -9,7 +9,7 @@ export default class Widget extends Component {
     super(props);
 
     this.state = {
-      stats: {}
+      stats: []
     };
 
     this.fetchWP = new fetchWP({
@@ -33,17 +33,15 @@ export default class Widget extends Component {
   getStats = () => {
     this.fetchWP.get( 'stats' )
     .then(
-      (json) => this.setState({
-        stats: {
-          totalPosts: json.total_posts,
-          totalPages: json.total_pages,
-          totalUsers: json.total_users,
-          totalCategories: json.total_categories,
-          totalTags: json.total_tags,
-          totalComments: json.total_comments,
-          totalImages: json.total_images
-        }
-      }),
+      (stats) => {
+        let statsArray = Object.keys(stats).map(key => {
+          return stats[key];
+        });
+
+        this.setState({
+          stats: statsArray
+        })
+      },
       (err) => console.log( 'error', err )
     );
   };
@@ -51,14 +49,22 @@ export default class Widget extends Component {
   render() {
     return (
       <div>
-        <h1>{this.props.wpObject.title ? this.props.wpObject.title : 'WP Live Stats'}</h1>
-        <p>Posts: {this.state.stats.totalPosts}</p>
-        <p>Pages: {this.state.stats.totalPages}</p>
-        <p>Users: {this.state.stats.totalUsers}</p>
-        <p>Categories: {this.state.stats.totalCategories}</p>
-        <p>Tags: {this.state.stats.totalTags}</p>
-        <p>Comments: {this.state.stats.totalComments}</p>
-        <p>Images: {this.state.stats.totalImages}</p>
+        <h3>{this.props.wpObject.title ? this.props.wpObject.title : 'WP Live Stats'}</h3>
+        {this.state.stats.length > 0 && this.state.stats.map( (site, id) => {
+          return (
+            <React.Fragment key={id}>
+              <h4>{this.state.stats[id].site_name}</h4>
+              <p>Posts: {this.state.stats[id].total_posts}</p>
+              <p>Pages: {this.state.stats[id].total_pages}</p>
+              <p>Users: {this.state.stats[id].total_users}</p>
+              <p>Categories: {this.state.stats[id].total_categories}</p>
+              <p>Tags: {this.state.stats[id].total_tags}</p>
+              <p>Comments: {this.state.stats[id].total_comments}</p>
+              <p>Images: {this.state.stats[id].total_images}</p>
+              <br></br>
+            </React.Fragment>
+          )
+        })}
       </div>
     );
   }

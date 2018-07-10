@@ -21926,17 +21926,13 @@ var Widget = function (_Component) {
     var _this = _possibleConstructorReturn(this, (Widget.__proto__ || Object.getPrototypeOf(Widget)).call(this, props));
 
     _this.getStats = function () {
-      _this.fetchWP.get('stats').then(function (json) {
-        return _this.setState({
-          stats: {
-            totalPosts: json.total_posts,
-            totalPages: json.total_pages,
-            totalUsers: json.total_users,
-            totalCategories: json.total_categories,
-            totalTags: json.total_tags,
-            totalComments: json.total_comments,
-            totalImages: json.total_images
-          }
+      _this.fetchWP.get('stats').then(function (stats) {
+        var statsArray = Object.keys(stats).map(function (key) {
+          return stats[key];
+        });
+
+        _this.setState({
+          stats: statsArray
         });
       }, function (err) {
         return console.log('error', err);
@@ -21944,7 +21940,7 @@ var Widget = function (_Component) {
     };
 
     _this.state = {
-      stats: {}
+      stats: []
     };
 
     _this.fetchWP = new _fetchWP2.default({
@@ -21972,56 +21968,70 @@ var Widget = function (_Component) {
   }, {
     key: 'render',
     value: function render() {
+      var _this3 = this;
+
       return _react2.default.createElement(
         'div',
         null,
         _react2.default.createElement(
-          'h1',
+          'h3',
           null,
           this.props.wpObject.title ? this.props.wpObject.title : 'WP Live Stats'
         ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Posts: ',
-          this.state.stats.totalPosts
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Pages: ',
-          this.state.stats.totalPages
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Users: ',
-          this.state.stats.totalUsers
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Categories: ',
-          this.state.stats.totalCategories
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Tags: ',
-          this.state.stats.totalTags
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Comments: ',
-          this.state.stats.totalComments
-        ),
-        _react2.default.createElement(
-          'p',
-          null,
-          'Images: ',
-          this.state.stats.totalImages
-        )
+        this.state.stats.length > 0 && this.state.stats.map(function (site, id) {
+          return _react2.default.createElement(
+            _react2.default.Fragment,
+            { key: id },
+            _react2.default.createElement(
+              'h4',
+              null,
+              _this3.state.stats[id].site_name
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Posts: ',
+              _this3.state.stats[id].total_posts
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Pages: ',
+              _this3.state.stats[id].total_pages
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Users: ',
+              _this3.state.stats[id].total_users
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Categories: ',
+              _this3.state.stats[id].total_categories
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Tags: ',
+              _this3.state.stats[id].total_tags
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Comments: ',
+              _this3.state.stats[id].total_comments
+            ),
+            _react2.default.createElement(
+              'p',
+              null,
+              'Images: ',
+              _this3.state.stats[id].total_images
+            ),
+            _react2.default.createElement('br', null)
+          );
+        })
       );
     }
   }]);
